@@ -7,6 +7,16 @@ import hashlib
 
 class Color(object):
     """ Object to create, convert and manipulate color in python
+        >>> c = Color()
+        >>> c.set_rgb_from_string(b'network')
+        >>> c.get_rgb()
+        (210, 12, 100)
+        >>> c = Color()
+        >>> c.set_hex_from_string(b'network')
+        >>> c.get_rgb()
+        (210, 12, 100)
+        >>> c.get_hex()
+        '#d20c64'
     """
 
     def __init__(self, rgb=(0, 0, 0), hex_rgb="#000000"):
@@ -35,9 +45,6 @@ class Color(object):
             a given string.
             :param: string: The string to colorize_string
             :type string: :py:class `bytes`
-
-            >>> self.set_rgb_from_string(b"network")
-            >>> self.get_rgb() == (210, 12, 100)
         """
         # get the md5 hexdigest of the string
         # its length is always 32
@@ -60,10 +67,7 @@ class Color(object):
             a given string.
             :param: string: The string to colorize_string
             :type string: :py:class `bytes`
-
-            >>> self.set_hex_from_string(b"network")
-            >>> self.get_hex() == '#d20c64'
-        """
+       """
         # Set the RGB of the object
         self.set_rgb_from_string(string)
         # unpack rgb
