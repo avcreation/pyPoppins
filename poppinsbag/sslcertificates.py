@@ -63,6 +63,9 @@ def parse_from_cert_datetime(cert_datetime):
                 certificate datetime
         :type cert_datetime: :py:class `str`
         :return: A datetime object
+
+        >>> parse_from_cert_datetime("20060322013934Z")
+        datetime.datetime(2006, 3, 22, 1, 39, 34)
     """
     # convert cert string date to datetime
     return datetime.datetime.strptime(cert_datetime, "%Y%m%d%H%M%SZ")
@@ -75,6 +78,10 @@ def reformat_cert_datetime(cert_datetime):
         :param cert_datetime: One of notAfter or notBefore certificate datetime
         :type cert_datetime: :py:class `str`
         :return: A well formatted datetime
+
+        >>> reformat_cert_datetime("20060322013934Z")
+        'Mar 22 01:39:34 2006 GMT'
+
     """
     datetime_obj = parse_from_cert_datetime(cert_datetime)
     # return formatted string
