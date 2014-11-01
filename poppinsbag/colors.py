@@ -12,6 +12,8 @@ class Color(object):
         (210, 12, 100)
         >>> c.get_hex()
         '#d20c64'
+        >>> c.get_hsl()
+        (333, 89, 44)
     """
     def __init__(self, rgb=(0, 0, 0), hex_rgb="#000000", string=None):
         """ Color object constuctor
@@ -25,11 +27,13 @@ class Color(object):
         if not hex_rgb == "#000000":
             self._hex_rgb = hex_rgb
             self._rgb = self.convert_hex_to_rgb()
+            self._hsl = self.convert_rgb_to_hsl()
         elif string:
             self.set_hex_from_string(string)
         else:
             self._rgb = rgb
             self._hex = self.convert_rgb_to_hex()
+            self._hsl = self.convert_rgb_to_hsl()
 
     def __repr__(self):
         return "<Color r:%s, g:%s, b:%s>" % self.get_rgb()
@@ -42,6 +46,10 @@ class Color(object):
         """ Get the rgb representation of the color. """
         return self._rgb
 
+    def get_hsl(self):
+        """ Get the HSL representation of the color. """
+        return self._hsl
+
     def set_hex_from_rgb(self):
         """ set the HEX color value """
         self._hex_rgb = self.convert_rgb_to_hex()
@@ -49,6 +57,15 @@ class Color(object):
     def set_rgb_from_hex(self):
         """ set the RGB from the HEX value """
         self._rgb = self.convert_hex_to_rgb()
+
+    def set_hsl_from_rgb(self):
+        """ set the HSL from the RGB value """
+        self._hsl = self.convert_rgb_to_hsl()
+
+    def set_hsl_from_hex(self):
+        """ set the HSL from the RGB value """
+        self._rgb = self.convert_hex_to_rgb()
+        self._hsl = self.convert_rgb_to_hsl()
 
     def convert_rgb_to_hex(self):
         """ Convert RGB color to HEX color """
@@ -71,6 +88,34 @@ class Color(object):
         return (int(_[:2], 16),
                 int(_[2:4], 16),
                 int(_[4:], 16))
+
+    def convert_rgb_to_hsl(self):
+        """ Convert RGB color to HSL color """
+        max_rgb = max(*self.get_rgb())
+        min_rgb = min(*self.get_rgb())
+        diff_max_min = float(max_rgb - min_rgb)
+        # compute h
+        if diff_max_min == 0:
+            h_hsl = 0
+        elif max_rgb == self._rgb[0]:
+            h_hsl = ((self._rgb[1] - self._rgb[2]) / diff_max_min) % 6
+        elif max_rgb == self._rgb[1]:
+            h_hsl = (self._rgb[2] - self._rgb[0]) / diff_max_min + 2
+        elif max_rgb == self._rgb[2]:
+            h_hsl = (self._rgb[0] - self._rgb[1]) / diff_max_min + 4
+        h_hsl = 60 * h_hsl
+        # compute L
+        # we want the % value, so divide by 255
+        l_hsl = 0.5 * (max_rgb + min_rgb) / 255.
+        # compute S
+        if l_hsl in (0, 1):
+            s_hsl = 0
+        else:
+            # we want the % value, so divide by 255
+            s_hsl = diff_max_min / float((1. - abs(2. * l_hsl - 1.))) / 255.
+        return (int(round(h_hsl)),
+                int(round(s_hsl*100)),
+                int(round(l_hsl*100)))
 
     def set_rgb_from_string(self, string):
         """ Set the rgb color representation of
@@ -103,3 +148,4 @@ class Color(object):
         # convert string to RGB then RGB to HEX and HEX TO HSL
         self.set_rgb_from_string(string)
         self.set_hex_from_rgb()
+        self.set_hsl_from_hex()
