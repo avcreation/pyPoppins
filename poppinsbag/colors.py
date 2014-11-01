@@ -5,6 +5,11 @@
 import hashlib
 
 
+class NotAValidComponentException(Exception):
+    """ Exception raised when trying to get an invalid component """
+    pass
+
+
 class Color(object):
     """ Object to create, convert and manipulate color in python
         >>> c = Color(string=b'network')
@@ -35,8 +40,33 @@ class Color(object):
             self._hex = self.convert_rgb_to_hex()
             self._hsl = self.convert_rgb_to_hsl()
 
+    @property
+    def models(self):
+        """ Compute the models dict on demands """
+        return {
+            'RGB': self.get_rgb(),
+            'HSL': self.get_hsl()
+        }
+
     def __repr__(self):
         return "<Color r:%s, g:%s, b:%s>" % self.get_rgb()
+
+    def __getitem__(self, component):
+        """ Get one component of color models """
+        # uppercase component
+        component = component.upper()
+        # get a list of available components
+        good_components = "".join(self.models.keys())
+        # detect bad item
+        if component not in good_components:
+            raise NotAValidComponentException()
+
+        # get the index
+        component_index = good_components.index(component)
+        # get the model from which the component comes
+        model = list(self.models.values())[int(component_index / 3)]
+        # return the component
+        return model[component_index % 3]
 
     def get_hex(self):
         """ Get the hexadecimal representation of the color. """
